@@ -15,13 +15,17 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
   // Config
   static const Duration _animationDuration = Duration(milliseconds: 600);
-  static const double _fontSize = 82;
+
   static const double _cardTransformLimit = .6;
   static const double _cardShadowLimit = 24;
+
+  static const String _text = 'Hey there!';
+  static const double _fontSize = 82;
   static const double _textTransformLimitX = 70;
   static const double _textTransformLimitY = 45;
   static const double _textShadowLimit = 4;
 
+  // Props
   final _random = math.Random();
 
   Color _color = Colors.blue;
@@ -144,7 +148,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
   Widget _buildText(double shadowX, double shadowY) {
     return Text(
-      'Hey there!',
+      _text,
       style: GoogleFonts.londrinaSolid(
         fontSize: _fontSize,
         fontWeight: FontWeight.w900,
