@@ -13,6 +13,15 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
+  // Config
+  static const Duration _animationDuration = Duration(milliseconds: 600);
+  static const double _fontSize = 82;
+  static const double _cardTransformLimit = .6;
+  static const double _cardShadowLimit = 24;
+  static const double _textTransformLimitX = 70;
+  static const double _textTransformLimitY = 45;
+  static const double _textShadowLimit = 4;
+
   final _random = math.Random();
 
   Color _color = Colors.blue;
@@ -47,8 +56,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
-    final double percentageX = (_localX / (size.width * 0.45) / 2) * 100;
-    final double percentageY = (_localY / ((size.height / 2) + 70) / 1.5) * 100;
+    final double percentageX = (_localX / (size.width * 0.5) / 2) * 100;
+    final double percentageY = (_localY / (size.height * 0.5) / 2) * 100;
 
     return Material(
       child: MouseRegion(
@@ -67,7 +76,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           }
         },
         child: GestureDetector(
-          onTapUp: (details) => ripple(details.globalPosition),
+          onTapUp: (details) => _ripple(details.globalPosition),
           child: DecoratedBox(
             decoration: BoxDecoration(color: _prevColor),
             child: CustomPaint(
@@ -86,24 +95,21 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   }
 
   Widget _buildContent(num percentageX, num percentageY) {
+    final fancyX = (percentageX / 50);
+    final fancyY = (percentageY / 50);
     // Card
-    final cardLimit = .6;
-    final cardX = _defaultPosition ? 0 : (1.2 * (percentageY / 50) + -1.2).clamp(-cardLimit, cardLimit);
-    final cardY = _defaultPosition ? 0 : (-0.3 * (percentageX / 50) + 0.3).clamp(-cardLimit, cardLimit);
+    final cardX = limit(value: _defaultPosition ? 0 : (1.2 * fancyY + -1.2), threshold: _cardTransformLimit);
+    final cardY = limit(value: _defaultPosition ? 0 : (-0.3 * fancyX + 0.3), threshold: _cardTransformLimit);
 
     // Text
-    final textLimitX = 70;
-    final textLimitY = 45;
-    final textX = _defaultPosition ? 0.0 : (70 * (percentageX / 50) + -70).clamp(-textLimitX, textLimitX);
-    final textY = _defaultPosition ? 0.0 : (80 * (percentageY / 50) + -80).clamp(-textLimitY, textLimitY);
-    final textShadowLimit = 4;
-    final textShadowX = -textX.clamp(-textShadowLimit, textShadowLimit);
-    final textShadowY = -textY.clamp(-textShadowLimit, textShadowLimit);
+    final textX = limit(value: _defaultPosition ? 0 : (70 * fancyX + -70), threshold: _textTransformLimitX);
+    final textY = limit(value: _defaultPosition ? 0 : (80 * fancyY + -80), threshold: _textTransformLimitY);
+    final textShadowX = limit(value: -textX, threshold: _textShadowLimit);
+    final textShadowY = limit(value: -textY, threshold: _textShadowLimit);
 
     // Card shadow
-    final cardShadowLimit = 24;
-    final cardShadowX = -(textX).clamp(-cardShadowLimit, cardShadowLimit);
-    final cardShadowY = -(textY).clamp(-cardShadowLimit, cardShadowLimit);
+    final cardShadowX = limit(value: -(textX), threshold: _cardShadowLimit);
+    final cardShadowY = limit(value: -(textY), threshold: _cardShadowLimit);
 
     return FittedBox(
       fit: BoxFit.scaleDown,
@@ -140,7 +146,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     return Text(
       'Hey there!',
       style: GoogleFonts.londrinaSolid(
-        fontSize: 72,
+        fontSize: _fontSize,
         fontWeight: FontWeight.w900,
         shadows: [
           Shadow(
@@ -159,24 +165,31 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   void _setupAnimation() {
     _rippleController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 600),
+      duration: _animationDuration,
     );
 
     _rippleAnimation = Tween(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _rippleController, curve: Curves.easeInOut),
     )..addListener(() {
-      setState(() => _fraction = _rippleAnimation.value);
-    });
+        setState(() => _fraction = _rippleAnimation.value);
+      });
   }
 
-  void ripple(Offset offset) {
+  /// Starts color change ripple animation with given [offset]
+  void _ripple(Offset offset) {
     final newColor = Color((_random.nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0);
+
     setState(() {
       _rippleOffset = offset;
       _prevColor = _color;
       _color = newColor;
     });
+
     _rippleController.reset();
     _rippleController.forward();
   }
+
+  /*--------------------------- [Utils] ---------------------------*/
+
+  num limit({num value, num threshold}) => value.clamp(-threshold, threshold);
 }
