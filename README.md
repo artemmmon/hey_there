@@ -1,6 +1,7 @@
 # web_test_task
 
-Simple web application
+Hey there! Web application sample. 
+![](hey_there_example.gif)
 
 ## Getting Started
 
