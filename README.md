@@ -1,6 +1,8 @@
 # hey_there
 
 Hey there! Web application sample with parallax effect and background change by ripple. 
+
+p.s. Have captured the video in this way, because in case of screen recording my mac would lag.
 ![](hey_there_example.gif)
 
 ## Links
