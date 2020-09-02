@@ -108,8 +108,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     // Text
     final textX = limit(value: _defaultPosition ? 0 : (70 * fancyX + -70), threshold: _textTransformLimitX);
     final textY = limit(value: _defaultPosition ? 0 : (80 * fancyY + -80), threshold: _textTransformLimitY);
-    final textShadowX = limit(value: -textX, threshold: _textShadowLimit);
-    final textShadowY = limit(value: -textY, threshold: _textShadowLimit);
+    final textShadowX = -((textX * _textShadowLimit) / _textTransformLimitX);
+    final textShadowY = -((textY * _textShadowLimit) / _textTransformLimitY);
 
     // Card shadow
     final cardShadowX = limit(value: -(textX), threshold: _cardShadowLimit);
